@@ -5,6 +5,11 @@ library(osfr)
 library(brms)
 library(cmdstanr)
 library(tidybayes)
+library(patchwork)
+library(here)
+
+# read in data
+d <- read_csv(here("data-clean", "bhet-fake.csv"))
 
 # DD model
 m1 <- feols(y ~ policy | village + wave, data=d, cluster="village")
@@ -46,12 +51,20 @@ post <-
          pm = nie / te,
          pe = (te - cde) / te)
 
-# plot of controlled direct effect
+# plot of total effect and cde
+
 post %>% 
-  ggplot(aes(x = cde)) + 
-    geom_density(color="transparent", fill="blue") + 
-    xlab("Hypothetical CDE") + ylab("Posterior density") + 
+  ggplot(aes(x = te)) + 
+    geom_density(color="#1b9e77", fill="#1b9e77", alpha=0.2) + 
+    geom_density(aes(x=cde), 
+                 color="#d95f02", fill="#d95f02", alpha=0.2) +
+    xlab("Hypothetical effect size") + ylab("Posterior density") + 
+    annotate("text", x = 1, y = 4.5, 
+           label="Total effect", size = 6, color = '#1b9e77') +
+    annotate("text", x = 0.48, y = 5, 
+           label="CDE", size = 6, color = '#d95f02') +
     theme_classic() + theme(axis.title = element_text(size=18))
+
 
 # table of estimates
 post %>%
