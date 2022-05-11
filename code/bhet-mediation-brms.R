@@ -42,7 +42,9 @@ bm <-
 # pull posterior samples
 post <- posterior_samples(bm)
 
-# define counterfactual quantities
+# Define and plot effects ----
+
+## define counterfactual quantities ====
 post <-
   post %>% 
   mutate(cde = b_y_policy,
@@ -51,7 +53,9 @@ post <-
          pm = nie / te,
          pe = (te - cde) / te)
 
-# plot of total effect and cde
+
+
+## plot of total effect and cde ====
 
 post %>% 
   ggplot(aes(x = te)) + 
@@ -66,7 +70,7 @@ post %>%
     theme_classic() + theme(axis.title = element_text(size=18))
 
 
-# table of estimates
+## table of estimates ====
 post %>%
   select(cde, nie, te, pm, pe) %>%
   pivot_longer(cols = everything()) %>% 
